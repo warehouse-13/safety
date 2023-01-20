@@ -57,15 +57,17 @@ const bufSize = 1024 * 1024
 // It uses a buffer to mimic network connections without actually opening a new one.
 // Use this server when testing the client programatically.
 //
-// dialer, _ := s.StartBuf("")
+// dialer := s.StartBuf("")
 // conn, _ := grpc.DialContext(context.TODO, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
 // defer conn.Close()
-func (s *FakeServer) StartBuf(token string) (net.Conn, error) {
-	l := bufconn.Listen(bufSize)
+func (s *FakeServer) StartBuf(token string) func(context.Context, string) (net.Conn, error) {
+	return func(context.Context, string) (net.Conn, error) {
+		l := bufconn.Listen(bufSize)
 
-	s.start(l, WithOpts(token))
+		s.start(l, WithOpts(token))
 
-	return l.Dial()
+		return l.Dial()
+	}
 }
 
 func (s *FakeServer) start(l net.Listener, opts []grpc.ServerOption) {

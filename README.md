@@ -34,7 +34,7 @@ This will start a server on a fake network (buffer).
 
 ```go
 server := fakeserver.New()
-dialler, _ := server.StartBuf("")
+dialer := server.StartBuf("")
 defer server.Stop()
 
 conn, _ := grpc.DialContext(context.TODO, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
